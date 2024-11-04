@@ -56,8 +56,8 @@
         </div>
         <div class="inventory">
             <h2>Inventory</h2>
-            <ul>
-                <li>Health Potion</li>
+            <ul id="item-list">
+                <li>Health Potion (3)</li>
                 <li>Sword</li>
                 <li>Shield</li>
             </ul>
@@ -68,31 +68,56 @@
         <p id="game-text">You are standing in a dark forest. What do you want to do?</p>
         <button onclick="explore()">Explore</button>
         <button onclick="rest()">Rest</button>
+        <button onclick="usePotion()" id="potion-button">Use Health Potion</button>
     </div>
 
     <script>
         let health = 100;
+        let healthPotions = 3;
 
         function updateHealthDisplay() {
             document.getElementById("health").innerText = `Health: ${health}`;
         }
 
+        function updateItemDisplay() {
+            document.getElementById("item-list").innerHTML = `<li>Health Potion (${healthPotions})</li><li>Sword</li><li>Shield</li>`;
+        }
+
         function explore() {
             const gameText = document.getElementById("game-text");
+            const enemyHealth = Math.floor(Math.random() * 50) + 20; // Enemy health between 20 and 70
+            const enemyDamage = Math.floor(Math.random() * 10) + 5; // Enemy damage between 5 and 14
 
-            // Simulate a battle with a chance of taking damage
-            const damage = Math.floor(Math.random() * 20); // Random damage between 0 and 19
-            health -= damage;
+            gameText.innerText = `You encounter a wild beast with ${enemyHealth} health! Prepare for battle!`;
+            startCombat(enemyHealth, enemyDamage);
+        }
 
-            if (health <= 0) {
-                health = 0;
-                gameText.innerText = "You encountered a wild beast and took too much damage! You have fallen.";
-                disableButtons();
-            } else {
-                gameText.innerText = `You venture into the forest and encounter a wild beast! You took ${damage} damage!`;
-            }
+        function startCombat(enemyHealth, enemyDamage) {
+            const gameText = document.getElementById("game-text");
 
-            updateHealthDisplay();
+            const combatInterval = setInterval(() => {
+                // Player attacks
+                enemyHealth -= 10; // Fixed player attack damage
+                gameText.innerText = `You attack the beast! It now has ${enemyHealth} health.`;
+
+                if (enemyHealth <= 0) {
+                    clearInterval(combatInterval);
+                    gameText.innerText += " You defeated the beast!";
+                    return;
+                }
+
+                // Enemy attacks
+                health -= enemyDamage;
+                if (health <= 0) {
+                    clearInterval(combatInterval);
+                    health = 0;
+                    gameText.innerText += ` The beast attacks and you fall! Game Over.`;
+                    disableButtons();
+                } else {
+                    updateHealthDisplay();
+                    gameText.innerText += ` The beast attacks you back! You have ${health} health left.`;
+                }
+            }, 2000); // Combat turns every 2 seconds
         }
 
         function rest() {
@@ -110,12 +135,31 @@
             updateHealthDisplay();
         }
 
+        function usePotion() {
+            if (healthPotions > 0) {
+                health += 30; // Heal 30 health with potion
+                if (health > 100) {
+                    health = 100; // Cap health at 100
+                }
+                healthPotions--;
+                updateHealthDisplay();
+                updateItemDisplay();
+                document.getElementById("game-text").innerText = `You used a health potion and regained 30 health.`;
+            } else {
+                document.getElementById("game-text").innerText = `You have no health potions left!`;
+            }
+        }
+
         function disableButtons() {
             const buttons = document.querySelectorAll("button");
             buttons.forEach(button => {
                 button.disabled = true; // Disable all buttons
             });
         }
+
+        // Initial setup
+        updateHealthDisplay();
+        updateItemDisplay();
     </script>
 </body>
 </html>
