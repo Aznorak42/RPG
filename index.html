@@ -65,19 +65,21 @@
     </div>
     <div class="game-area">
         <h2>Game Area</h2>
-        <p>You are standing in a dark forest. What do you want to do?</p>
+        <p id="game-text">You are standing in a dark forest. What do you want to do?</p>
         <button onclick="explore()">Explore</button>
         <button onclick="rest()">Rest</button>
     </div>
 
     <script>
         function explore() {
-            alert("You venture into the forest and encounter a wild beast!");
+            const gameText = document.getElementById("game-text");
+            gameText.innerText = "You venture into the forest and encounter a wild beast! Prepare for battle!";
             // Additional game logic can go here
         }
 
         function rest() {
-            alert("You rest and regain some health.");
+            const gameText = document.getElementById("game-text");
+            gameText.innerText = "You rest and regain some health. You feel refreshed!";
             // Additional game logic can go here
         }
     </script>
