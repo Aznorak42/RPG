@@ -50,7 +50,7 @@
         <div class="stats">
             <h2>Character Stats</h2>
             <p><strong>Name:</strong> Hero</p>
-            <p><strong>Health:</strong> 100</p>
+            <p id="health"><strong>Health:</strong> 100</p>
             <p><strong>Attack:</strong> 10</p>
             <p><strong>Defense:</strong> 5</p>
         </div>
@@ -71,16 +71,50 @@
     </div>
 
     <script>
+        let health = 100;
+
+        function updateHealthDisplay() {
+            document.getElementById("health").innerText = `Health: ${health}`;
+        }
+
         function explore() {
             const gameText = document.getElementById("game-text");
-            gameText.innerText = "You venture into the forest and encounter a wild beast! Prepare for battle!";
-            // Additional game logic can go here
+
+            // Simulate a battle with a chance of taking damage
+            const damage = Math.floor(Math.random() * 20); // Random damage between 0 and 19
+            health -= damage;
+
+            if (health <= 0) {
+                health = 0;
+                gameText.innerText = "You encountered a wild beast and took too much damage! You have fallen.";
+                disableButtons();
+            } else {
+                gameText.innerText = `You venture into the forest and encounter a wild beast! You took ${damage} damage!`;
+            }
+
+            updateHealthDisplay();
         }
 
         function rest() {
             const gameText = document.getElementById("game-text");
-            gameText.innerText = "You rest and regain some health. You feel refreshed!";
-            // Additional game logic can go here
+
+            // Regain health
+            const healthRestored = Math.floor(Math.random() * 15) + 5; // Random health recovery between 5 and 19
+            health += healthRestored;
+
+            if (health > 100) {
+                health = 100; // Cap health at 100
+            }
+
+            gameText.innerText = `You rest and regain ${healthRestored} health. You feel refreshed!`;
+            updateHealthDisplay();
+        }
+
+        function disableButtons() {
+            const buttons = document.querySelectorAll("button");
+            buttons.forEach(button => {
+                button.disabled = true; // Disable all buttons
+            });
         }
     </script>
 </body>
