@@ -20,7 +20,7 @@
             justify-content: space-around;
             margin-top: 20px;
         }
-        .stats, .inventory, .game-area {
+        .stats, .inventory, .game-area, .battle-area {
             background: #fff;
             border: 1px solid #ccc;
             border-radius: 8px;
@@ -28,7 +28,10 @@
             width: 30%;
         }
         .game-area {
-            width: 100%;
+            display: block;
+        }
+        .battle-area {
+            display: none; /* Hidden by default */
         }
         button {
             padding: 10px;
@@ -63,6 +66,7 @@
             </ul>
         </div>
     </div>
+    
     <div class="game-area">
         <h2>Game Area</h2>
         <p id="game-text">You are standing in a dark forest. What do you want to do?</p>
@@ -70,10 +74,20 @@
         <button onclick="rest()">Rest</button>
         <button onclick="usePotion()" id="potion-button">Use Health Potion</button>
     </div>
+    
+    <div class="battle-area">
+        <h2>Battle!</h2>
+        <p id="battle-text"></p>
+        <button onclick="attack()">Attack</button>
+        <button onclick="usePotionInBattle()">Use Health Potion</button>
+        <button onclick="flee()">Flee</button>
+    </div>
 
     <script>
         let health = 100;
         let healthPotions = 3;
+        let enemyHealth = 0;
+        let enemyDamage = 0;
 
         function updateHealthDisplay() {
             document.getElementById("health").innerText = `Health: ${health}`;
@@ -84,58 +98,43 @@
         }
 
         function explore() {
-            const gameText = document.getElementById("game-text");
-            const enemyHealth = Math.floor(Math.random() * 50) + 20; // Enemy health between 20 and 70
-            const enemyDamage = Math.floor(Math.random() * 10) + 5; // Enemy damage between 5 and 14
-
-            gameText.innerText = `You encounter a wild beast with ${enemyHealth} health! Prepare for battle!`;
-            startCombat(enemyHealth, enemyDamage);
+            enemyHealth = Math.floor(Math.random() * 50) + 20; // Enemy health between 20 and 70
+            enemyDamage = Math.floor(Math.random() * 10) + 5; // Enemy damage between 5 and 14
+            document.getElementById("game-text").innerText = "You encounter a wild beast! Prepare for battle!";
+            enterBattle();
         }
 
-        function startCombat(enemyHealth, enemyDamage) {
-            const gameText = document.getElementById("game-text");
-
-            const combatInterval = setInterval(() => {
-                // Player attacks
-                enemyHealth -= 10; // Fixed player attack damage
-                gameText.innerText = `You attack the beast! It now has ${enemyHealth} health.`;
-
-                if (enemyHealth <= 0) {
-                    clearInterval(combatInterval);
-                    gameText.innerText += " You defeated the beast!";
-                    return;
-                }
-
-                // Enemy attacks
-                health -= enemyDamage;
-                if (health <= 0) {
-                    clearInterval(combatInterval);
-                    health = 0;
-                    gameText.innerText += ` The beast attacks and you fall! Game Over.`;
-                    disableButtons();
-                } else {
-                    updateHealthDisplay();
-                    gameText.innerText += ` The beast attacks you back! You have ${health} health left.`;
-                }
-            }, 2000); // Combat turns every 2 seconds
+        function enterBattle() {
+            document.querySelector(".game-area").style.display = "none"; // Hide game area
+            document.querySelector(".battle-area").style.display = "block"; // Show battle area
+            updateBattleText();
         }
 
-        function rest() {
-            const gameText = document.getElementById("game-text");
+        function updateBattleText() {
+            document.getElementById("battle-text").innerText = `The beast has ${enemyHealth} health. You have ${health} health.`;
+        }
 
-            // Regain health
-            const healthRestored = Math.floor(Math.random() * 15) + 5; // Random health recovery between 5 and 19
-            health += healthRestored;
-
-            if (health > 100) {
-                health = 100; // Cap health at 100
+        function attack() {
+            enemyHealth -= 10; // Fixed player attack damage
+            if (enemyHealth <= 0) {
+                document.getElementById("battle-text").innerText = "You defeated the beast!";
+                disableBattleButtons();
+                return;
             }
 
-            gameText.innerText = `You rest and regain ${healthRestored} health. You feel refreshed!`;
-            updateHealthDisplay();
+            // Enemy attacks back
+            health -= enemyDamage;
+            if (health <= 0) {
+                health = 0;
+                document.getElementById("battle-text").innerText += " The beast attacks and you fall! Game Over.";
+                disableBattleButtons();
+            } else {
+                updateHealthDisplay();
+                updateBattleText();
+            }
         }
 
-        function usePotion() {
+        function usePotionInBattle() {
             if (healthPotions > 0) {
                 health += 30; // Heal 30 health with potion
                 if (health > 100) {
@@ -144,17 +143,38 @@
                 healthPotions--;
                 updateHealthDisplay();
                 updateItemDisplay();
-                document.getElementById("game-text").innerText = `You used a health potion and regained 30 health.`;
+                document.getElementById("battle-text").innerText = `You used a health potion and regained 30 health.`;
             } else {
-                document.getElementById("game-text").innerText = `You have no health potions left!`;
+                document.getElementById("battle-text").innerText = `You have no health potions left!`;
             }
         }
 
-        function disableButtons() {
-            const buttons = document.querySelectorAll("button");
+        function flee() {
+            document.getElementById("battle-text").innerText = "You fled from the battle!";
+            disableBattleButtons();
+            document.querySelector(".game-area").style.display = "block"; // Show game area again
+            document.querySelector(".battle-area").style.display = "none"; // Hide battle area
+        }
+
+        function disableBattleButtons() {
+            const buttons = document.querySelectorAll(".battle-area button");
             buttons.forEach(button => {
-                button.disabled = true; // Disable all buttons
+                button.disabled = true; // Disable all battle buttons
             });
+        }
+
+        function rest() {
+            const gameText = document.getElementById("game-text");
+
+            const healthRestored = Math.floor(Math.random() * 15) + 5; // Random health recovery
+            health += healthRestored;
+
+            if (health > 100) {
+                health = 100; // Cap health at 100
+            }
+
+            gameText.innerText = `You rest and regain ${healthRestored} health. You feel refreshed!`;
+            updateHealthDisplay();
         }
 
         // Initial setup
