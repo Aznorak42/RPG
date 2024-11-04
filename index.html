@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple RPG Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .stats, .inventory, .game-area {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            width: 30%;
+        }
+        .game-area {
+            width: 100%;
+        }
+        button {
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple RPG Game</h1>
+    <div class="container">
+        <div class="stats">
+            <h2>Character Stats</h2>
+            <p><strong>Name:</strong> Hero</p>
+            <p><strong>Health:</strong> 100</p>
+            <p><strong>Attack:</strong> 10</p>
+            <p><strong>Defense:</strong> 5</p>
+        </div>
+        <div class="inventory">
+            <h2>Inventory</h2>
+            <ul>
+                <li>Health Potion</li>
+                <li>Sword</li>
+                <li>Shield</li>
+            </ul>
+        </div>
+    </div>
+    <div class="game-area">
+        <h2>Game Area</h2>
+        <p>You are standing in a dark forest. What do you want to do?</p>
+        <button onclick="explore()">Explore</button>
+        <button onclick="rest()">Rest</button>
+    </div>
+
+    <script>
+        function explore() {
+            alert("You venture into the forest and encounter a wild beast!");
+            // Additional game logic can go here
+        }
+
+        function rest() {
+            alert("You rest and regain some health.");
+            // Additional game logic can go here
+        }
+    </script>
+</body>
+</html>
